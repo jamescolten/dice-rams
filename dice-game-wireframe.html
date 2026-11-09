@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dice Rams – Wireframe</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: #e6e6e6; color: #222;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 10px 40px; min-height: 100vh;
+  }
+  .jumpbar { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+  .jumpbar span { font-size: 12px; color: #666; align-self: center; margin-right: 4px; }
+  .jumpbar button { font-size: 12px; padding: 5px 10px; border: 1px solid #999; background: #f7f7f7; border-radius: 4px; cursor: pointer; }
+  .jumpbar button:hover { background: #fff; }
+
+  .phone {
+    width: 375px; height: 780px; background: #fafafa;
+    border: 10px solid #222; border-radius: 40px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  }
+  .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 22px; background: #222; border-radius: 0 0 14px 14px; z-index: 50; }
+  .screen { position: absolute; inset: 0; padding: 40px 18px 24px; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* generic wireframe parts */
+  .btn {
+    display: block; width: 100%; padding: 14px; font-size: 16px; font-weight: 600;
+    border: 2px solid #222; background: #fff; color: #222; border-radius: 10px; cursor: pointer;
+  }
+  .btn.primary { background: #222; color: #fff; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .btn + .btn { margin-top: 10px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; min-height: 32px; }
+  .topbar h2 { font-size: 18px; }
+  .link { background: none; border: none; font-size: 15px; color: #222; text-decoration: underline; cursor: pointer; padding: 4px 0; }
+  .placeholder-img {
+    border: 2px dashed #999; border-radius: 12px; background:
+      linear-gradient(to top right, transparent calc(50% - 1px), #bbb, transparent calc(50% + 1px)),
+      linear-gradient(to top left, transparent calc(50% - 1px), #bbb, transparent calc(50% + 1px));
+    display: flex; align-items: center; justify-content: center; color: #888; font-size: 12px;
+  }
+  .note { font-size: 12px; color: #777; text-align: center; }
+
+  /* home */
+  #home .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  #home .hero .placeholder-img { width: 150px; height: 150px; }
+  #home .hero .logo { width: 200px; max-height: 200px; object-fit: contain; }
+  #home h1 { font-size: 28px; letter-spacing: .5px; }
+  #home .sub { color: #666; font-size: 14px; }
+
+  /* rules */
+  .scroll { overflow-y: auto; flex: 1; padding-right: 4px; }
+  .scroll h3 { font-size: 14px; text-transform: uppercase; letter-spacing: .6px; color: #555; margin: 16px 0 6px; }
+  .scroll p, .scroll li { font-size: 14px; line-height: 1.45; }
+  .scroll ul { padding-left: 18px; }
+  table.moves { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.moves td { border: 1px solid #ccc; padding: 6px 8px; vertical-align: top; }
+  table.moves td:first-child { font-weight: 700; width: 44px; text-align: center; background: #f0f0f0; }
+  .mini-board { display: grid; grid-template-columns: repeat(5, 22px); gap: 2px; margin: 6px 0; }
+  .mini-board div { width: 22px; height: 22px; border: 1px solid #aaa; background: #fff; font-size: 9px; display: flex; align-items: center; justify-content: center; }
+  .mini-board div.hl { background: #cfcfcf; }
+
+  /* settings */
+  .group { border: 1px solid #ccc; border-radius: 10px; background: #fff; margin-bottom: 16px; overflow: hidden; }
+  .group-title { font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: .6px; margin: 0 0 6px 4px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 13px 14px; font-size: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+  .row:last-child { border-bottom: none; }
+  .radio { width: 20px; height: 20px; border: 2px solid #222; border-radius: 50%; position: relative; }
+  .radio.on::after { content: ""; position: absolute; inset: 3px; background: #222; border-radius: 50%; }
+  .row select { font-size: 14px; padding: 6px 8px; border: 2px solid #222; border-radius: 8px; background: #fff; color: #222; max-width: 190px; cursor: pointer; }
+
+  /* game */
+  .scorebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .player-card { border: 2px solid #ccc; border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
+  .player-card.active { border-color: #222; box-shadow: 0 0 0 2px #222 inset; }
+  .player-card .swatch { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #222; }
+  .player-card.black .swatch { background: #222; }
+  .player-card .name { font-size: 13px; font-weight: 600; }
+  .player-card .pts { margin-left: auto; font-size: 22px; font-weight: 700; }
+  .player-card.black { flex-direction: row-reverse; }
+  .player-card.black .pts { margin-left: 0; margin-right: auto; }
+  .vs { font-size: 11px; color: #777; text-align: center; line-height: 1.3; }
+
+  .board-wrap { display: flex; justify-content: center; }
+  .board { display: grid; grid-template-columns: 18px repeat(5, 60px); grid-auto-rows: 60px; }
+  .board .lbl { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #777; }
+  .board .lbl.col { height: 18px; }
+  .board.nolabels .lbl { visibility: hidden; }
+  .cell { border: 1px solid #999; margin: -0.5px; background: #fff; position: relative; display: flex; align-items: center; justify-content: center; }
+  .cell.high { background: #d6d6d6; }
+  .cell .coord { position: absolute; top: 2px; left: 3px; font-size: 8px; color: #aaa; }
+  .board.nolabels .cell .coord { display: none; }
+  .cell.legal { cursor: pointer; }
+  .cell.legal::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 2px dashed #222; }
+  .cell.legal.capture::before { width: 50px; height: 50px; border-radius: 8px; border: 3px dashed #222; position: absolute; }
+  .cell.legal:hover { outline: 3px solid #222; outline-offset: -3px; z-index: 2; }
+  .zone-key { display: flex; justify-content: center; gap: 14px; font-size: 11px; color: #666; margin-top: 6px; }
+  .zone-key i { display: inline-block; width: 10px; height: 10px; border: 1px solid #999; vertical-align: -1px; margin-right: 4px; }
+
+  .die { width: 42px; height: 42px; border: 2px solid #222; border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 4px; background: #fff; }
+  .die.black { background: #222; }
+  .die .pip { width: 7px; height: 7px; border-radius: 50%; place-self: center; }
+  .die .pip.on { background: #222; }
+  .die.black .pip.on { background: #fff; }
+  .die.unknown { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .die.black.unknown { color: #fff; }
+  .die.moving { outline: 3px dashed #222; outline-offset: 3px; }
+  .tag { position: absolute; bottom: 1px; right: 3px; font-size: 9px; font-weight: 700; background: #fff; border: 1px solid #222; border-radius: 3px; padding: 0 3px; z-index: 3; }
+
+  .status { border: 2px dashed #aaa; border-radius: 10px; padding: 10px 12px; margin: 12px 0 10px; min-height: 62px; font-size: 14px; line-height: 1.4; }
+  .status b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .controls { display: flex; gap: 10px; align-items: center; }
+  .controls .rolled { min-width: 54px; height: 64px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px dashed #bbb; border-radius: 10px; flex-shrink: 0; padding: 0 5px; }
+  .pick { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 2px solid transparent; border-radius: 8px; padding: 2px 3px; cursor: pointer; font-size: 9px; font-weight: 700; color: #555; text-transform: uppercase; }
+  .pick .die { width: 36px; height: 36px; padding: 3px; }
+  .pick .die .pip { width: 6px; height: 6px; }
+  .pick.move { border-color: #222; color: #222; }
+  .pick.none { opacity: .4; }
+  .controls .btn { margin: 0; }
+  .log { margin-top: 10px; font-size: 12px; color: #666; text-align: center; min-height: 16px; }
+
+  .overlay { position: absolute; inset: 0; background: rgba(250,250,250,.94); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 20; }
+  .overlay.show { display: flex; }
+  .overlay h2 { font-size: 24px; margin-bottom: 8px; }
+  .overlay p { color: #555; margin-bottom: 20px; font-size: 15px; }
+  .overlay .bigscore { font-size: 40px; font-weight: 800; margin-bottom: 20px; }
+
+  /* results */
+  #results .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+  #results .trophy { display: flex; justify-content: center; margin-bottom: 6px; }
+  #results h1 { font-size: 30px; }
+  #results .final { font-size: 48px; font-weight: 800; letter-spacing: 2px; }
+  #results .fmt { color: #666; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="jumpbar">
+  <span>Jump to screen:</span>
+  <button onclick="show('home')">Home</button>
+  <button onclick="show('rules')">How to play</button>
+  <button onclick="show('settings')">Settings</button>
+  <button onclick="newMatch(lastMode)">Gameplay</button>
+  <button onclick="previewResults()">Results</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- HOME -->
+  <section class="screen active" id="home">
+    <div class="hero">
+      <img class="logo" alt="Two rams logo"
+           src="file:///Users/jchome/Library/Application%20Support/Dia/User%20Data/Default/AgentServer/contexts/50D85EA3-E3F1-4F03-A88B-FF54A29637D8/work/two-sheep-logo.svg"
+           onerror="this.replaceWith(Object.assign(document.createElement('div'), {className: 'placeholder-img', textContent: 'Logo not found', style: 'width:150px;height:150px'}))">
+      <h1>Dice Rams</h1>
+      <div class="sub">Two rams battle for the plateau</div>
+      <div class="sub" style="font-size:12px">1 player vs computer · or 2 players, pass and play</div>
+    </div>
+    <button class="btn primary" onclick="newMatch('cpu')">Play vs computer</button>
+    <button class="btn" onclick="newMatch('local')">Pass and play</button>
+    <button class="btn" onclick="show('rules')">How to play</button>
+    <button class="btn" onclick="show('settings')">Settings</button>
+    <p class="note" style="margin-top:12px">Match format: <b id="homeFormat">Best of 3</b> · Board: <b id="homeBoard">Default</b><br>vs computer you play <b id="homeSide">White Ram</b></p>
+  </section>
+
+  <!-- RULES -->
+  <section class="screen" id="rules">
+    <div class="topbar">
+      <button class="link" onclick="back()">‹ Back</button>
+      <h2>How to play</h2>
+      <span style="width:40px"></span>
+    </div>
+    <div class="scroll">
+      <h3>The board</h3>
+      <p>5×5 grid, columns A–E, rows 1–5. The White Ram starts on C1, the Black Ram on C5.</p>
+      <div class="mini-board" id="miniBoard"></div>
+      <p><b>Board: <span id="rulesBoardName">Default</span>.</b> <span id="rulesBoardDesc"></span> Shaded squares are <b>The Plateau</b>; white squares are <b>The Cliffs</b>. Pick a board in Settings.</p>
+
+      <h3>Setup</h3>
+      <p>Each player rolls one die. Each roll becomes that ram's starting score (S1–S6). In round 1, lower roll goes first and ties re-roll. In later rounds, the player who landed the last successful hit goes first.</p>
+
+      <h3>Your turn</h3>
+      <p>Roll two dice. Pick one to <b>move</b> with (R1–R6). The other goes on your ram as its new <b>score</b> (S1–S6). A big number can power your attack or your defense, but not both.</p>
+
+      <h3>Movement</h3>
+      <p>Moves go in a straight line. "1–2" means you choose 1 or 2 spaces.</p>
+      <table class="moves">
+        <tr><td>R1</td><td>1 space horizontally or vertically</td></tr>
+        <tr><td>R2</td><td>1 space horizontally, vertically, or diagonally</td></tr>
+        <tr><td>R3</td><td>1–2 spaces diagonally</td></tr>
+        <tr><td>R4</td><td>1–2 spaces horizontally or vertically</td></tr>
+        <tr><td>R5</td><td>1–2 spaces horizontally or vertically, or 1 space diagonally</td></tr>
+        <tr><td>R6</td><td>1–2 spaces horizontally, vertically, or diagonally</td></tr>
+      </table>
+
+      <h3>Successful hits</h3>
+      <ul>
+        <li>Charge onto the other ram's square to land a successful hit. Your <b>score die</b> (your ram's new score) is compared to their ram's score.</li>
+        <li><b>The Cliffs:</b> lower numbers are stronger. Your score must be <b>equal to or lower</b> than theirs. (S3 hits S3–S6.)</li>
+        <li><b>The Plateau:</b> higher numbers are stronger. Your score must be <b>equal to or higher</b> than theirs. (S3 hits S1–S3.)</li>
+        <li>The zone of the ram being hit decides which rule applies.</li>
+      </ul>
+
+      <h3>S6 bonus</h3>
+      <p>End your turn as an S6 on the Plateau and you take another turn. Keep going until you end a turn as an S6 on the Cliffs or with any other score on the Plateau.</p>
+
+      <h3>No legal move</h3>
+      <p>If neither die gives you a legal move, you pass and your ram keeps its current score.</p>
+
+      <h3>Winning</h3>
+      <p>Each successful hit scores 1 point, and both rams reset to C1 and C5 with a fresh opening roll. The ram with the most successful hits wins the match: best of 3, 5, or 7, or race to 10 (set in Settings).</p>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen" id="settings">
+    <div class="topbar">
+      <button class="link" onclick="back()">‹ Back</button>
+      <h2>Settings</h2>
+      <span style="width:40px"></span>
+    </div>
+    <div class="group-title">Game</div>
+    <div class="group">
+      <label class="row">Match format <select id="selFormat" onchange="setFormat(this.value)"></select></label>
+      <label class="row">Board <select id="selBoard" onchange="setBoard(this.value)"></select></label>
+      <label class="row">Vs computer, you play <select id="selSide" onchange="setSide(this.value)"></select></label>
+    </div>
+    <p class="note" id="settingsHint" style="text-align:left;margin:-8px 4px 16px"></p>
+    <div class="group-title">Display</div>
+    <div class="group">
+      <label class="row">Board coordinates <select id="selCoords" onchange="setCoords(this.value === 'on')">
+        <option value="on">Show</option><option value="off">Hide</option></select></label>
+      <label class="row">Sound effects <select><option>On</option><option>Off</option></select></label>
+      <label class="row">Haptics <select><option>Off</option><option>On</option></select></label>
+    </div>
+    <p class="note">Sound and haptics are placeholders in this wireframe.</p>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="game">
+    <div class="topbar">
+      <button class="link" onclick="quitGame()">‹ Menu</button>
+      <span class="note" id="roundInfo">Best of 3 · Round 1</span>
+      <button class="link" onclick="show('rules')">Rules</button>
+    </div>
+
+    <div class="scorebar">
+      <div class="player-card white" id="cardWhite"><div class="swatch"></div><span class="name" id="nameWhite">White Ram</span><span class="pts" id="ptsWhite">0</span></div>
+      <div class="vs">hits to win<br><b id="targetPts">2</b></div>
+      <div class="player-card black" id="cardBlack"><div class="swatch"></div><span class="name" id="nameBlack">Black Ram</span><span class="pts" id="ptsBlack">0</span></div>
+    </div>
+
+    <div class="board-wrap"><div class="board" id="board"></div></div>
+    <div class="zone-key"><span><i style="background:#fff"></i>The Cliffs</span><span><i style="background:#d6d6d6"></i>The Plateau</span><span>◌ move</span><span>⬚ hit</span></div>
+
+    <div class="status" id="status"></div>
+    <div class="controls">
+      <div class="rolled" id="rolledDie"></div>
+      <button class="btn primary" id="actionBtn"></button>
+    </div>
+    <div class="log" id="log"></div>
+
+    <div class="overlay" id="roundOverlay">
+      <h2 id="ovTitle">Successful hit!</h2>
+      <p id="ovText"></p>
+      <div class="bigscore" id="ovScore">1 – 0</div>
+      <button class="btn primary" style="max-width:240px" id="ovBtn" onclick="closeOverlay()">Start round</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="results">
+    <div class="hero">
+      <div class="trophy" id="resTrophy"></div>
+      <h1 id="resWinner">White Ram wins!</h1>
+      <div class="final" id="resScore">2 – 1</div>
+      <div class="fmt" id="resFormat">Best of 3 · 3 rounds played</div>
+    </div>
+    <button class="btn primary" onclick="newMatch(lastMode)">Play again</button>
+    <button class="btn" onclick="show('settings')">Change match format</button>
+    <button class="btn" onclick="show('home')">Home</button>
+  </section>
+</div>
+
+<script>
+const COLS = ['A','B','C','D','E'];
+const FORMATS = [
+  { id: 'bo3', label: 'Best of 3', target: 2 },
+  { id: 'bo5', label: 'Best of 5', target: 3 },
+  { id: 'bo7', label: 'Best of 7', target: 4 },
+  { id: 'r10', label: 'Race to 10', target: 10 },
+];
+const MOVE_TEXT = {
+  1: '1 space horizontally or vertically.',
+  2: '1 space in any direction.',
+  3: '1–2 spaces diagonally.',
+  4: '1–2 spaces horizontally or vertically.',
+  5: '1–2 spaces horizontally or vertically, or 1 diagonally.',
+  6: '1–2 spaces in any straight line.',
+};
+const PIPS = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
+
+let format = FORMATS[0];
+let showCoords = true;
+let history = ['home'];
+let lastMode = 'cpu';      // 'cpu' or 'local'
+let humanSide = 'white';   // side the human plays vs computer
+const CPU_DELAY = 800;     // ms between computer actions, so moves are watchable
+let S; // game state
+
+const other = c => c === 'white' ? 'black' : 'white';
+const name = c => c === 'white' ? 'White Ram' : 'Black Ram';
+const sq = p => COLS[p.c] + p.r;
+// Board layouts: which squares are The Plateau (everything else is The Cliffs)
+const centerNine = (c, r) => c >= 1 && c <= 3 && r >= 2 && r <= 4;
+const isCorner = (c, r) => (c === 0 || c === 4) && (r === 1 || r === 5);
+const BOARDS = [
+  { id: 'default', label: 'Default', desc: 'The 9 center squares are The Plateau; the 16 edge squares are The Cliffs.',
+    high: centerNine },
+  { id: 'volcano', label: 'Volcano', desc: 'Like Default, but C3 drops into The Cliffs and the four corners rise to The Plateau.',
+    high: (c, r) => (centerNine(c, r) && !(c === 2 && r === 3)) || isCorner(c, r) },
+  { id: 'pillars', label: 'Pillars', desc: 'Four 2×2 Plateau blocks in the corners, split by a Cliffs cross through column C and row 3.',
+    high: (c, r) => (c <= 1 || c >= 3) && (r <= 2 || r >= 4) },
+  { id: 'valley', label: 'Valley', desc: 'Row 3 is The Cliffs; every other row is The Plateau.',
+    high: (c, r) => r !== 3 },
+];
+let board = BOARDS[0];
+// Uses the board the current match was started on
+const isHigh = (c, r) => (S && S.board ? S.board : board).high(c, r);
+// Attacker's new ram score vs defender's score; zone of the target square decides
+const canCapture = (mine, theirs, c, r) => isHigh(c, r) ? mine >= theirs : mine <= theirs;
+const d6 = () => Math.floor(Math.random() * 6) + 1;
+const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
+const label = c => name(c) + (S && S.cpu ? (c === S.cpu ? ' (CPU)' : ' (You)') : '');
+// Whose action the game is waiting on right now
+const actor = () => S.phase === 'setup' ? (S.setup.white === null ? 'white' : 'black') : S.turn;
+const isCpuTurn = () => !!S.cpu && S.phase !== 'over' && actor() === S.cpu;
+const handoff = c => !S.cpu ? `Pass the phone to ${name(c)}.`
+  : c === S.cpu ? `${label(c)} is taking its turn.` : 'Your turn.';
+
+/* ---------- navigation ---------- */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  if (history[history.length - 1] !== id) history.push(id);
+}
+function back() {
+  history.pop();
+  const prev = history[history.length - 1] || 'home';
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === prev));
+  if (prev === 'game' && S) render(); // resumes the computer if it was mid-turn
+}
+function quitGame() {
+  if (confirm('Leave this match? Progress will be lost.')) { stopCpu(); history = ['home']; show('home'); }
+}
+
+/* ---------- settings ---------- */
+function renderFormats() {
+  const opts = (items, current) => items.map(([v, text]) =>
+    `<option value="${v}" ${v === current ? 'selected' : ''}>${text}</option>`).join('');
+  document.getElementById('selFormat').innerHTML =
+    opts(FORMATS.map(f => [f.id, `${f.label} (${f.target} hits to win)`]), format.id);
+  document.getElementById('selBoard').innerHTML = opts(BOARDS.map(b => [b.id, b.label]), board.id);
+  document.getElementById('selSide').innerHTML = opts([['white', 'White Ram'], ['black', 'Black Ram']], humanSide);
+  document.getElementById('selCoords').value = showCoords ? 'on' : 'off';
+  document.getElementById('settingsHint').textContent =
+    `${board.label}: ${board.desc} The computer plays ${name(other(humanSide))}.`;
+  document.getElementById('homeFormat').textContent = format.label;
+  document.getElementById('homeBoard').textContent = board.label;
+  document.getElementById('homeSide').textContent = name(humanSide);
+  renderMini();
+}
+function setFormat(id) { format = FORMATS.find(f => f.id === id); renderFormats(); }
+function setBoard(id) { board = BOARDS.find(b => b.id === id); renderFormats(); }
+// Rules screen preview of the selected board
+function renderMini() {
+  let mini = '';
+  for (let r = 5; r >= 1; r--) for (let c = 0; c < 5; c++) {
+    const tag = (c === 2 && r === 5) ? 'B' : (c === 2 && r === 1) ? 'W' : '';
+    mini += `<div class="${board.high(c, r) ? 'hl' : ''}">${tag}</div>`;
+  }
+  document.getElementById('miniBoard').innerHTML = mini;
+  document.getElementById('rulesBoardName').textContent = board.label;
+  document.getElementById('rulesBoardDesc').textContent = board.desc;
+}
+function setSide(c) { humanSide = c; renderFormats(); }
+function setCoords(on) {
+  showCoords = on;
+  document.getElementById('board').classList.toggle('nolabels', !showCoords);
+}
+
+/* ---------- game flow ---------- */
+function freshPieces() {
+  return { white: { c: 2, r: 1, s: null }, black: { c: 2, r: 5, s: null } };
+}
+function newMatch(mode = lastMode) {
+  stopCpu();
+  lastMode = mode;
+  S = {
+    board, cpu: mode === 'cpu' ? other(humanSide) : null, cpuTimer: null, cpuPlan: null,
+    score: { white: 0, black: 0 }, round: 1,
+    pieces: freshPieces(), phase: 'setup', setup: { white: null, black: null },
+    turn: null, firstPlayer: null, dice: null, pick: null, moves: [], notice: '', log: '',
+  };
+  document.getElementById('roundOverlay').classList.remove('show');
+  history = ['home'];
+  show('game');
+  render();
+}
+function nextRound() {
+  S.round++;
+  S.pieces = freshPieces();
+  S.phase = 'setup'; S.setup = { white: null, black: null };
+  S.turn = null; S.dice = null; S.pick = null; S.moves = []; S.notice = ''; S.log = '';
+  S.cpuPlan = null;
+  document.getElementById('roundOverlay').classList.remove('show');
+  render();
+}
+function closeOverlay() {
+  document.getElementById('roundOverlay').classList.remove('show');
+  render(); // lets the computer start if it's up first
+}
+
+function onAction(byCpu) {
+  if (isCpuTurn() && !byCpu) return;
+  if (S.phase === 'setup') return setupRoll();
+  if (S.phase === 'roll') return doRoll();
+  if (S.phase === 'move' && !hasAnyMove()) return passTurn();
+}
+
+function setupRoll() {
+  const who = S.setup.white === null ? 'white' : 'black';
+  S.setup[who] = d6();
+  S.pieces[who].s = S.setup[who];
+  if (who === 'black') {
+    const w = S.setup.white, b = S.setup.black;
+    if (S.firstPlayer) {
+      // After round 1, whoever scored the last point goes first; ties don't matter
+      S.turn = S.firstPlayer;
+      S.phase = 'roll';
+      S.notice = `White rolled ${w}, Black rolled ${b}. ${name(S.turn)} scored last, so goes first.`;
+    } else if (w === b) {
+      S.notice = `Tie: both rolled ${w}. Roll again.`;
+      S.setup = { white: null, black: null };
+      S.pieces.white.s = S.pieces.black.s = null;
+    } else {
+      S.turn = w < b ? 'white' : 'black';
+      S.phase = 'roll';
+      S.notice = `White rolled ${w}, Black rolled ${b}. ${name(S.turn)} goes first.`;
+    }
+  }
+  render();
+}
+
+function legalMoves(color, roll, score) {
+  const p = S.pieces[color], o = S.pieces[other(color)];
+  const H = [[1,0],[-1,0]], V = [[0,1],[0,-1]], D = [[1,1],[1,-1],[-1,1],[-1,-1]];
+  const HV = H.concat(V);
+  // each rule: [directions, allowed distances]
+  const rules = {
+    1: [[HV, [1]]],
+    2: [[HV.concat(D), [1]]],
+    3: [[D, [1, 2]]],
+    4: [[HV, [1, 2]]],
+    5: [[HV, [1, 2]], [D, [1]]],
+    6: [[HV.concat(D), [1, 2]]],
+  }[roll];
+  const out = [];
+  for (const [dirs, dists] of rules) for (const [dc, dr] of dirs) for (const dist of dists) {
+    const c = p.c + dc * dist, r = p.r + dr * dist;
+    if (c < 0 || c > 4 || r < 1 || r > 5) continue;
+    if (o.c === c && o.r === r) {
+      if (canCapture(score, o.s, c, r)) out.push({ c, r, capture: true });
+    } else out.push({ c, r, capture: false });
+  }
+  return out;
+}
+// Move die i, score die is the other one
+const movesFor = i => legalMoves(S.turn, S.dice[i], S.dice[1 - i]);
+const hasAnyMove = () => [0, 1].some(i => movesFor(i).length > 0);
+
+function doRoll() {
+  S.dice = [d6(), d6()];
+  S.pick = null;
+  S.moves = [];
+  S.phase = 'move';
+  S.notice = '';
+  render();
+}
+
+function pickDie(i, byCpu) {
+  if (isCpuTurn() && !byCpu) return;
+  S.pick = i;
+  S.moves = movesFor(i);
+  render();
+}
+
+function moveTo(c, r, byCpu) {
+  if (isCpuTurn() && !byCpu) return;
+  const m = S.moves.find(m => m.c === c && m.r === r);
+  if (!m) return;
+  const me = S.turn, p = S.pieces[me], from = sq(p);
+  const roll = S.dice[S.pick], score = S.dice[1 - S.pick];
+  p.c = c; p.r = r; p.s = score;
+  S.log = `${name(me)} R${roll}/S${score}: ${from} → ${sq(p)}${m.capture ? ' (successful hit)' : ''}`;
+  S.dice = null; S.pick = null; S.moves = [];
+
+  if (m.capture) {
+    S.pieces[other(me)].captured = true;
+    S.score[me]++;
+    S.phase = 'over';
+    return endRound(me);
+  }
+  if (score === 6 && isHigh(c, r)) {
+    S.notice = `S6 on the Plateau: ${label(me)} goes again.`;
+  } else {
+    S.turn = other(me);
+    S.notice = handoff(S.turn);
+  }
+  S.phase = 'roll';
+  render();
+}
+
+function passTurn() {
+  // Neither die gives a legal move: ram keeps its current score
+  const me = S.turn;
+  S.log = `${name(me)} rolled ${S.dice[0]} & ${S.dice[1]}: no legal move`;
+  S.dice = null; S.pick = null; S.moves = [];
+  S.turn = other(me);
+  S.phase = 'roll';
+  S.notice = handoff(S.turn);
+  render();
+}
+
+/* ---------- computer player ---------- */
+// 1. Always take a successful hit if one is available.
+// 2. Otherwise go for the S6 bonus: keep a 6 and end on the Plateau for another turn.
+// 3. Otherwise pick a random reachable square, then choose which die moves
+//    so the ram keeps the best score for that zone:
+//    higher S on the Plateau, lower S on the Cliffs.
+function cpuChoose() {
+  const options = [0, 1].flatMap(i =>
+    movesFor(i).map(m => ({ i, c: m.c, r: m.r, capture: m.capture, score: S.dice[1 - i] })));
+  const hits = options.filter(o => o.capture);
+  if (hits.length) return pickRandom(hits);
+
+  const bonus = options.filter(o => o.score === 6 && isHigh(o.c, o.r));
+  if (bonus.length) return pickRandom(bonus);
+
+  const dest = pickRandom(options);
+  const sameSquare = options.filter(o => o.c === dest.c && o.r === dest.r);
+  const best = isHigh(dest.c, dest.r)
+    ? Math.max(...sameSquare.map(o => o.score))
+    : Math.min(...sameSquare.map(o => o.score));
+  return pickRandom(sameSquare.filter(o => o.score === best));
+}
+
+function cpuStep() {
+  S.cpuTimer = null;
+  if (!isCpuTurn()) return;
+  if (S.phase === 'setup' || S.phase === 'roll') return onAction(true);
+  if (S.phase === 'move') {
+    if (!hasAnyMove()) return passTurn();
+    if (S.pick === null) {
+      S.cpuPlan = cpuChoose();
+      return pickDie(S.cpuPlan.i, true);
+    }
+    const plan = S.cpuPlan;
+    S.cpuPlan = null;
+    return moveTo(plan.c, plan.r, true);
+  }
+}
+
+// Called after every render: schedules the computer's next action if it's up
+const cpuBlocked = () =>
+  !document.getElementById('game').classList.contains('active') ||
+  document.getElementById('roundOverlay').classList.contains('show');
+function cpuTick() {
+  if (!isCpuTurn() || S.cpuTimer || cpuBlocked()) return;
+  const game = S;
+  // Re-check when the timer fires: a round overlay or the rules screen may have opened since
+  S.cpuTimer = setTimeout(() => { if (S === game && !cpuBlocked()) cpuStep(); else game.cpuTimer = null; }, CPU_DELAY);
+}
+function stopCpu() {
+  if (S && S.cpuTimer) { clearTimeout(S.cpuTimer); S.cpuTimer = null; }
+}
+
+function endRound(winner) {
+  if (S.score[winner] >= format.target) return showResults(winner);
+  const loser = other(winner), where = sq(S.pieces[winner]);
+  // Point is on the board: reset rams right away for the next round
+  nextRound();
+  S.firstPlayer = winner;
+  S.notice = `${name(winner)} landed a successful hit on ${where} (+1). Rams reset. Roll for starting scores; ${name(winner)} goes first.`;
+  render();
+  document.getElementById('ovTitle').textContent = 'Successful hit!';
+  document.getElementById('ovText').textContent =
+    `${name(winner)} hit the ${name(loser)} on ${where}. Both rams are back on C1 and C5.`;
+  document.getElementById('ovScore').textContent = `${S.score.white} – ${S.score.black}`;
+  document.getElementById('ovBtn').textContent = `Start round ${S.round}`;
+  document.getElementById('roundOverlay').classList.add('show');
+}
+
+function victorySVG(color) {
+  const fill = color === 'white' ? '#fff' : '#222';
+  const detail = color === 'white' ? '#222' : '#fff';
+  const horn = color === 'white' ? '#888' : '#bbb';
+  // Wool puffs along the back give the body a fleece outline
+  const puffs = [72, 82, 92, 102, 112, 122].map(x => `<circle cx="${x}" cy="66" r="7"/>`).join('');
+  return `<svg viewBox="0 0 200 165" width="230" height="190" aria-label="${name(color)} on the Plateau">
+    <!-- the Plateau: flat top, cliff faces down both sides -->
+    <path d="M6 160 L42 108 H158 L194 160 Z" fill="#d6d6d6" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+    <g stroke="#999" stroke-width="2" fill="none">
+      <path d="M38 122 l10 0 M26 138 l14 0 M16 152 l10 0"/>
+      <path d="M162 122 l-10 0 M174 138 l-14 0 M184 152 l-10 0"/>
+    </g>
+    <!-- ram, facing right -->
+    <g stroke="#222" stroke-width="3" stroke-linejoin="round" fill="${fill}">
+      <rect x="78" y="84" width="7" height="24" rx="2"/>
+      <rect x="90" y="84" width="7" height="24" rx="2"/>
+      <rect x="110" y="84" width="7" height="24" rx="2"/>
+      <rect x="122" y="84" width="7" height="24" rx="2"/>
+      <circle cx="64" cy="72" r="6"/>
+      ${puffs}
+      <ellipse cx="97" cy="76" rx="36" ry="16"/>
+      <path d="M128 70 L140 56" stroke-width="12" stroke-linecap="round" stroke="#222"/>
+      <path d="M128 70 L140 56" stroke-width="7" stroke-linecap="round" stroke="${fill}"/>
+      <ellipse cx="148" cy="58" rx="9" ry="13" transform="rotate(-35 148 58)"/>
+    </g>
+    <path d="M145 48 c-8 -10 -22 -4 -20 7 c2 9 13 9 14 2 c1 -5 -5 -6 -7 -3"
+          fill="none" stroke="${horn}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M145 48 c-8 -10 -22 -4 -20 7 c2 9 13 9 14 2 c1 -5 -5 -6 -7 -3"
+          fill="none" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="150" cy="55" r="2" fill="${detail}"/>
+    <text x="100" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#555" letter-spacing="1">THE PLATEAU</text>
+  </svg>`;
+}
+
+function showResults(winner) {
+  document.getElementById('resTrophy').innerHTML = victorySVG(winner);
+  document.getElementById('resWinner').textContent = `${label(winner)} wins!`;
+  document.getElementById('resScore').textContent = `${S.score.white} – ${S.score.black}`;
+  document.getElementById('resFormat').textContent = `${format.label} · ${S.round} round${S.round > 1 ? 's' : ''} played`;
+  history = ['home'];
+  show('results');
+}
+function previewResults() {
+  if (!S) S = { score: { white: 2, black: 1 }, round: 3 };
+  showResults(S.score.white >= S.score.black ? 'white' : 'black');
+}
+
+/* ---------- rendering ---------- */
+function dieHTML(color, value, extra = '') {
+  if (!value) return `<div class="die ${color} unknown ${extra}">?</div>`;
+  const on = PIPS[value];
+  let pips = '';
+  for (let i = 0; i < 9; i++) pips += `<span class="pip ${on.includes(i) ? 'on' : ''}"></span>`;
+  return `<div class="die ${color} ${extra}">${pips}</div>`;
+}
+
+function render() {
+  // header + scores
+  document.getElementById('roundInfo').textContent = `${format.label} · ${S.board.label} · Round ${S.round}`;
+  document.getElementById('targetPts').textContent = format.target;
+  document.getElementById('ptsWhite').textContent = S.score.white;
+  document.getElementById('ptsBlack').textContent = S.score.black;
+  document.getElementById('nameWhite').textContent = label('white');
+  document.getElementById('nameBlack').textContent = label('black');
+  const active = S.phase === 'setup' ? (S.setup.white === null ? 'white' : 'black') : S.turn;
+  document.getElementById('cardWhite').classList.toggle('active', active === 'white');
+  document.getElementById('cardBlack').classList.toggle('active', active === 'black');
+
+  // board (row 5 at top, row 1 at bottom)
+  let html = '';
+  for (let r = 5; r >= 1; r--) {
+    html += `<div class="lbl">${r}</div>`;
+    for (let c = 0; c < 5; c++) {
+      const move = S.moves.find(m => m.c === c && m.r === r);
+      const cls = ['cell', isHigh(c, r) ? 'high' : '', move ? 'legal' : '', move && move.capture ? 'capture' : ''].join(' ');
+      let inner = `<span class="coord">${COLS[c]}${r}</span>`;
+      for (const color of ['white', 'black']) {
+        const p = S.pieces[color];
+        if (p.c === c && p.r === r && !p.captured) {
+          const moving = S.phase === 'move' && S.turn === color && S.pick !== null;
+          const val = moving ? S.dice[S.pick] : p.s;
+          inner += dieHTML(color, val, moving ? 'moving' : '');
+          if (val) inner += `<span class="tag">${moving ? 'R' : 'S'}${val}</span>`;
+        }
+      }
+      html += `<div class="${cls}" ${move ? `onclick="moveTo(${c},${r})"` : ''}>${inner}</div>`;
+    }
+  }
+  html += `<div class="lbl col"></div>` + COLS.map(l => `<div class="lbl col">${l}</div>`).join('');
+  const board = document.getElementById('board');
+  board.innerHTML = html;
+  board.classList.toggle('nolabels', !showCoords);
+
+  // status + controls
+  const status = document.getElementById('status');
+  const btn = document.getElementById('actionBtn');
+  const rolled = document.getElementById('rolledDie');
+  btn.onclick = onAction;
+  btn.disabled = false;
+  rolled.innerHTML = '';
+
+  if (S.phase === 'setup') {
+    const who = S.setup.white === null ? 'white' : 'black';
+    status.innerHTML = `<b>Opening roll · Round ${S.round}</b>${S.notice || 'Lower roll goes first. Rolls become starting ram scores.'}`;
+    btn.textContent = `Roll for ${name(who)}`;
+    if (S.setup.white) rolled.innerHTML = dieHTML('white', S.setup.white);
+  } else if (S.phase === 'roll') {
+    status.innerHTML = `<b>${name(S.turn)}'s turn</b>${S.notice || 'Roll two dice: one moves your ram, the other becomes its score.'}`;
+    btn.textContent = `Roll (${name(S.turn)})`;
+  } else if (S.phase === 'move') {
+    const [a, b] = S.dice;
+    const capWith = [0, 1].filter(i => movesFor(i).some(m => m.capture));
+    rolled.innerHTML = S.dice.map((v, i) => {
+      const role = S.pick === null ? 'tap' : (S.pick === i ? 'move' : 'score');
+      const none = movesFor(i).length === 0 ? 'none' : '';
+      const cap = capWith.includes(i) && role !== 'score' ? 'move' : '';
+      const label = role === 'tap' ? (cap ? `R${v} ⚔` : `R${v}?`) : role;
+      return `<button class="pick ${role} ${none} ${cap}" onclick="pickDie(${i})">${dieHTML(S.turn, v)}${label}</button>`;
+    }).join('');
+    const capHint = capWith.length
+      ? ` <u>Hit available</u>: move with ${capWith.map(i => `R${S.dice[i]} (keep S${S.dice[1 - i]})`).join(' or ')}.`
+      : '';
+
+    if (!hasAnyMove()) {
+      status.innerHTML = `<b>${name(S.turn)} rolled ${a} & ${b}</b>Neither die gives a legal move. Your ram keeps S${S.pieces[S.turn].s}.`;
+      btn.textContent = 'Pass turn';
+    } else if (S.pick === null) {
+      status.innerHTML = `<b>${name(S.turn)} rolled ${a} & ${b}</b>Tap the die you want to <b style="display:inline">move</b> with. The other becomes your ram's score.${capHint}`;
+      btn.textContent = 'Pick a move die';
+      btn.disabled = true;
+    } else {
+      const roll = S.dice[S.pick], score = S.dice[1 - S.pick];
+      const caps = S.moves.some(m => m.capture);
+      const swapCap = !caps && capWith.includes(1 - S.pick) ? ' <u>Swap dice to land a hit.</u>' : '';
+      const extra = score === 6 ? ' Ending on the Plateau earns another turn.' : '';
+      status.innerHTML = S.moves.length
+        ? `<b>Move R${roll} · Score S${score}</b>${MOVE_TEXT[roll]} Tap a highlighted square, or tap the other die to swap.${caps ? ' <u>Hit available!</u>' : ''}${swapCap}${extra}`
+        : `<b>Move R${roll} · Score S${score}</b>R${roll} has no legal move here. Tap the other die to swap.${swapCap}`;
+      btn.textContent = S.moves.length ? 'Choose a square' : 'Swap dice';
+      btn.disabled = true;
+    }
+  }
+
+  // Computer's turn: describe what it's doing and lock the human's controls
+  if (isCpuTurn()) {
+    const who = label(S.cpu);
+    if (S.phase === 'setup') {
+      status.innerHTML = `<b>Opening roll · Round ${S.round}</b>${S.notice ? S.notice + ' ' : ''}${who} is rolling…`;
+    } else if (S.phase === 'roll') {
+      status.innerHTML = `<b>${who}'s turn</b>${S.notice || ''} Rolling…`;
+    } else if (S.phase === 'move') {
+      const [a, b] = S.dice;
+      status.innerHTML = !hasAnyMove()
+        ? `<b>${who} rolled ${a} & ${b}</b>No legal move. Passing.`
+        : S.pick === null
+          ? `<b>${who} rolled ${a} & ${b}</b>Choosing a move…`
+          : `<b>${who} rolled ${a} & ${b}</b>Moving with R${S.dice[S.pick]}, keeping S${S.dice[1 - S.pick]}.`;
+    }
+    btn.textContent = 'Computer is playing…';
+    btn.disabled = true;
+  }
+  document.getElementById('log').textContent = S.log ? `Last move: ${S.log}` : '';
+  cpuTick();
+}
+
+/* ---------- init ---------- */
+(function init() {
+  renderFormats(); // also draws the rules mini-board
+})();
+</script>
+</body>
+</html>
