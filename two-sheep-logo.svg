@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <title>Two Spy Rams</title>
+  <defs>
+    <clipPath id="frame">
+      <rect width="600" height="600"/>
+    </clipPath>
+    <!-- Horn curl, shared by both rams -->
+    <path id="horn" d="M280 292 C 274 266, 238 266, 238 292 C 238 316, 268 324, 282 314 C 292 306, 300 308, 306 318"/>
+    <path id="hornTip" d="M282 314 C 292 306, 300 308, 306 318"/>
+  </defs>
+
+  <g clip-path="url(#frame)" stroke="#1E1E1E" stroke-linejoin="round">
+    <!-- Sky -->
+    <rect width="600" height="600" fill="#F5F1E8" stroke="none"/>
+
+    <!-- Far peaks -->
+    <polygon fill="#D4D4D4" stroke-width="3" points="-10,330 40,270 80,300 130,220 180,290 220,250 260,300 300,200 350,280 400,230 450,290 500,215 550,280 610,240 610,610 -10,610"/>
+
+    <!-- Highlands -->
+    <polygon fill="#A0A0A0" stroke-width="3" points="-10,400 60,340 120,380 180,320 240,370 300,330 360,375 420,320 480,365 540,330 610,370 610,610 -10,610"/>
+    <g fill="none" stroke-width="3" stroke-linecap="square">
+      <polyline points="60,340 70,362"/>
+      <polyline points="180,320 192,345 186,358"/>
+      <polyline points="420,320 432,345 426,358"/>
+      <polyline points="540,330 550,352"/>
+    </g>
+
+    <!-- Lowlands far below -->
+    <polygon fill="#6E6E6E" stroke-width="3" points="-10,470 100,440 200,465 300,445 400,465 500,440 610,460 610,610 -10,610"/>
+    <polyline fill="none" stroke="#5A5A5A" stroke-width="3" points="-10,520 120,505 260,520 400,505 610,520"/>
+
+    <!-- Cliff -->
+    <polygon fill="#1E1E1E" stroke-width="3" points="60,610 80,540 70,500 100,470 95,430 120,405 160,398 230,402 300,396 370,402 440,398 480,406 505,440 498,475 525,505 515,550 540,610"/>
+    <g fill="#333333" stroke="none">
+      <polygon points="120,405 160,398 148,445 118,480 100,470 95,430"/>
+      <polygon points="440,398 480,406 505,440 498,475 470,455 462,420"/>
+      <polygon points="300,396 370,402 340,470 312,520 296,470"/>
+    </g>
+    <g fill="none" stroke="#F5F1E8" stroke-width="3" stroke-linecap="square">
+      <polyline points="150,430 168,470 156,515"/>
+      <polyline points="455,430 440,480 452,520"/>
+      <polyline points="250,420 262,452"/>
+    </g>
+  </g>
+
+  <!-- Impact marks where the rams collide -->
+  <g stroke="#1E1E1E" stroke-width="4" stroke-linecap="square">
+    <line x1="300" y1="262" x2="300" y2="240"/>
+    <line x1="286" y1="266" x2="274" y2="250"/>
+    <line x1="314" y1="266" x2="326" y2="250"/>
+  </g>
+
+  <!-- RAM 1: black wool, white face (faces right, pushing) -->
+  <g stroke="#1E1E1E" stroke-width="4" stroke-linejoin="round">
+    <!-- legs braced: back legs pushing, front legs planted -->
+    <g fill="#F5F1E8">
+      <polygon points="160,345 174,345 154,400 142,400"/>
+      <polygon points="180,350 194,350 178,400 166,400"/>
+      <polygon points="238,350 252,350 266,400 254,400"/>
+      <polygon points="256,345 270,345 288,400 276,400"/>
+    </g>
+    <g fill="#1E1E1E">
+      <polygon points="143,392 155,392 156,401 140,401"/>
+      <polygon points="167,392 179,392 180,401 164,401"/>
+      <polygon points="253,392 265,392 268,401 252,401"/>
+      <polygon points="275,392 287,392 290,401 274,401"/>
+    </g>
+
+    <!-- fleece -->
+    <polygon fill="#1E1E1E" points="135,318 142,292 158,298 168,272 188,282 204,262 224,276 244,262 258,280 274,284 268,306 282,322 264,334 270,356 246,350 232,368 214,352 196,368 182,350 160,360 160,340 140,342 150,328"/>
+
+    <!-- lowered head -->
+    <polygon fill="#F5F1E8" points="262,292 290,288 300,300 298,318 292,348 280,350 270,338 258,316"/>
+
+    <!-- mask with angry brow -->
+    <polygon fill="#1E1E1E" stroke="none" points="262,300 297,308 298,318 266,318"/>
+    <polygon fill="#F5F1E8" stroke="none" points="278,309 293,312 291,316 280,315"/>
+    <circle cx="290" cy="313.5" r="1.8" fill="#1E1E1E" stroke="none"/>
+
+    <!-- gritted mouth -->
+    <polyline fill="none" stroke-width="2.5" stroke-linecap="round" points="276,340 282,336 288,341"/>
+
+    <!-- curled horn -->
+    <use href="#horn" fill="none" stroke="#1E1E1E" stroke-width="16" stroke-linecap="round"/>
+    <use href="#horn" fill="none" stroke="#A8A8A8" stroke-width="9" stroke-linecap="round"/>
+    <use href="#horn" fill="none" stroke="#1E1E1E" stroke-width="9" stroke-dasharray="2 6"/>
+  </g>
+
+  <!-- RAM 2: white wool, black face (mirrored, faces left, pushing) -->
+  <g transform="translate(600 0) scale(-1 1)" stroke="#1E1E1E" stroke-width="4" stroke-linejoin="round">
+    <!-- legs -->
+    <g fill="#1E1E1E">
+      <polygon points="160,345 174,345 154,401 142,401"/>
+      <polygon points="180,350 194,350 178,401 166,401"/>
+      <polygon points="238,350 252,350 266,401 254,401"/>
+      <polygon points="256,345 270,345 288,401 276,401"/>
+    </g>
+
+    <!-- fleece -->
+    <polygon fill="#F5F1E8" points="135,318 142,292 158,298 168,272 188,282 204,262 224,276 244,262 258,280 274,284 268,306 282,322 264,334 270,356 246,350 232,368 214,352 196,368 182,350 160,360 160,340 140,342 150,328"/>
+
+    <!-- lowered head -->
+    <polygon fill="#1E1E1E" points="262,292 290,288 300,300 298,318 292,348 280,350 270,338 258,316"/>
+
+    <!-- mask with angry brow -->
+    <polygon fill="#F5F1E8" stroke="none" points="262,300 297,308 298,318 266,318"/>
+    <polygon fill="#1E1E1E" stroke="none" points="278,309 293,312 291,316 280,315"/>
+    <circle cx="290" cy="313.5" r="1.8" fill="#F5F1E8" stroke="none"/>
+
+    <!-- gritted mouth -->
+    <polyline fill="none" stroke="#F5F1E8" stroke-width="2.5" stroke-linecap="round" points="276,340 282,336 288,341"/>
+
+    <!-- curled horn -->
+    <use href="#horn" fill="none" stroke="#1E1E1E" stroke-width="16" stroke-linecap="round"/>
+    <use href="#horn" fill="none" stroke="#A8A8A8" stroke-width="9" stroke-linecap="round"/>
+    <use href="#horn" fill="none" stroke="#1E1E1E" stroke-width="9" stroke-dasharray="2 6"/>
+  </g>
+
+  <!-- Ram 1's horn tip redrawn on top so the horns interlock -->
+  <g stroke-linecap="round">
+    <use href="#hornTip" fill="none" stroke="#1E1E1E" stroke-width="16"/>
+    <use href="#hornTip" fill="none" stroke="#A8A8A8" stroke-width="9"/>
+    <use href="#hornTip" fill="none" stroke="#1E1E1E" stroke-width="9" stroke-linecap="butt" stroke-dasharray="2 6"/>
+  </g>
+
+  <!-- Frame border -->
+  <rect x="5" y="5" width="590" height="590" fill="none" stroke="#1E1E1E" stroke-width="10"/>
+</svg>
